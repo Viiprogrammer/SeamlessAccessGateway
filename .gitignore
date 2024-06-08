@@ -1,3 +1,14 @@
+# Webviwe binaries
+webview
+webview.exe
+# MITM certs
+.http-mitm-proxy
+
+clearances.json
+
+# IDEA
+.idea
+
 # Logs
 logs
 *.log
