@@ -55,30 +55,58 @@ function onResponseHeadersExtractClearanceFactory (clearances, activeChallenges)
                 .map(([key, value]) => [key.toLowerCase(), value])
         )
 
-        if (lowercaseHeaders.cookie && lowercaseHeaders.cookie.includes('cf_clearance')) {
-            const cookies = lowercaseHeaders.cookie.split(';')
+        const lowercaseHeadersResponse = Object.fromEntries(
+            Object.entries(ctx.serverToProxyResponse.headers)
+                .map(([key, value]) => [key.toLowerCase(), value])
+        )
 
-            for (const cookie of cookies) {
-                const [name, value] = cookie.split('=')
+        const requestCookieHasCfClearance = lowercaseHeaders.cookie && lowercaseHeaders.cookie.includes('cf_clearance')
+        let responseCookieHasCfClearance = false
 
-                if (name === 'cf_clearance') {
-                    clearances.set(ctx.clientToProxyRequest.headers.host, {
-                        value: value,
-                        'user-agent': lowercaseHeaders['user-agent']
-                    })
+        let found = false
+        const setCookie = lowercaseHeadersResponse['set-cookie']
+        let arrSetCookie = []
 
-                    const { host: challengeHost } = ctx.clientToProxyRequest.headers
-                    const activeCfChallenge = [...activeChallenges.entries()].find(([host]) => {
-                        return getDomain(host) === getDomain(challengeHost)
-                    })
+        if (setCookie) {
+            arrSetCookie = Array.isArray(setCookie) ?
+                setCookie : [setCookie]
 
-                    if (activeCfChallenge) {
-                        activeCfChallenge[1].solved = true
-                        activeCfChallenge[1].closeWebview()
+            for (const cookie of arrSetCookie) {
+                if (cookie.includes('cf_clearance')) {
+                    responseCookieHasCfClearance = true
+                    break
+                }
+            }
+        }
+
+        if (requestCookieHasCfClearance || responseCookieHasCfClearance) {
+            const cookiesArr = requestCookieHasCfClearance ? [lowercaseHeaders.cookie] : arrSetCookie
+            for (const cookiesInstance of cookiesArr) {
+                const cookies = cookiesInstance.split(';')
+
+                for (const cookie of cookies) {
+                    const [name, value] = cookie.split('=')
+
+                    if (name === 'cf_clearance' && value) {
+                        found = true
+                        clearances.set(ctx.clientToProxyRequest.headers.host, {
+                            value: value,
+                            'user-agent': lowercaseHeaders['user-agent']
+                        })
+
+                        const { host: challengeHost } = ctx.clientToProxyRequest.headers
+                        const activeCfChallenge = [...activeChallenges.entries()].find(([host]) => {
+                            return getDomain(host) === getDomain(challengeHost)
+                        })
+
+                        if (activeCfChallenge) {
+                            activeCfChallenge[1].solved = true
+                            activeCfChallenge[1].closeWebview()
+                        }
+
+                        console.log('Clearance found', value)
+                        //break
                     }
-
-                    console.log('Clearance found', value)
-                    //break
                 }
             }
         }
