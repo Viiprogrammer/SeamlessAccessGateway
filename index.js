@@ -8,7 +8,6 @@ import { PersistentMap } from "./utils/persistent-map.js";
 
 const activeChallenges = new Map()
 const clearances = new PersistentMap([], 'clearances.json')
-console.log(clearances)
 //global.clearances = clearances
 //console.error = () => {}
 
