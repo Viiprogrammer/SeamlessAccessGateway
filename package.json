@@ -1,7 +1,7 @@
 {
-  "name": "cf-solver",
+  "name": "seamless-access-gateway",
   "version": "1.0.0",
-  "description": "",
+  "description": "Enhanced Proxy Solution with Seamless Cloudflare CAPTCHA Solving for API-Enabled Applications ",
   "main": "./src/index.js",
   "bin": "build/index.js",
   "scripts": {
