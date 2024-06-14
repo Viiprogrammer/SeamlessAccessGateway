@@ -1,6 +1,6 @@
 import { Proxy } from "http-mitm-proxy"
 import { filterSocketConnReset } from "./shared.js";
-import net from "node:net";
+import net from "net";
 import {getDomain, makeHeadersLowercase} from "../utils/index.js";
 
 const proxy = new Proxy()

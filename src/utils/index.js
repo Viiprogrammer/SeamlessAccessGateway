@@ -1,5 +1,4 @@
-import tls from "node:tls"
-import { setTimeout as sleep } from 'node:timers/promises'
+import tls from "tls"
 import karmaChromeLauncher from "karma-chrome-launcher"
 
 export function shuffleArray(array) {
@@ -102,4 +101,8 @@ export function findChrome () {
     }
 
     return paths
+}
+
+export function sleep (ms) {
+    return new Promise(resolve => setTimeout(resolve, ms))
 }

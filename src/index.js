@@ -1,7 +1,7 @@
 import {findChrome, patchTLSFingerprint} from "./utils/index.js";
 patchTLSFingerprint()
 
-import { spawn } from "node:child_process"
+import { spawn } from "child_process"
 import { startExternalProxy } from "./proxies/index.js";
 import { startInternalProxy } from "./proxies/internal.js";
 import { PersistentMap } from "./utils/persistent-map.js";
