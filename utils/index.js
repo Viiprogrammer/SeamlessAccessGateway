@@ -1,4 +1,5 @@
 import tls from "node:tls"
+import {setTimeout as sleep} from 'node:timers/promises'
 
 export function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -48,4 +49,42 @@ export function getDomain(url, subdomain) {
     }
 
     return url;
+}
+
+export async function fetchWithRetry (url, opts = {}) {
+    let { pause, retry = 3, timeout = 3000, callback, silent = false } = opts
+
+    while (retry > 0) {
+        try {
+            opts.signal = AbortSignal.timeout(timeout)
+            const response = await fetch(url, opts)
+
+            if (response.status >= 500 && response.status < 600) {
+                throw new Error('Request failed with status code ' + response.status)
+            } else {
+                return response
+            }
+        } catch (err) {
+            if (callback) callback(retry)
+
+            retry = retry - 1
+
+            if (retry === 0) {
+                throw err
+            }
+
+            if (pause) {
+                if (!silent) console.log("pausing..")
+                await sleep(pause)
+                if (!silent) console.log("done pausing...")
+            }
+        }
+    }
+}
+
+export function makeHeadersLowercase (headers) {
+    return Object.fromEntries(
+        Object.entries(headers)
+            .map(([key, value]) => [key.toLowerCase(), value])
+    )
 }
