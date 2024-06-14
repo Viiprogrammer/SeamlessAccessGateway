@@ -24,7 +24,6 @@ func createWebview() {
 	w.SetTitle("CF Solver")
 	w.SetSize(800, 600, webview.HintNone)
 	w.Navigate(*url)
-	w.Eval("document.addEventListener('click', event => { alert(document.cookie) })")
 	w.Run()
 }
 
