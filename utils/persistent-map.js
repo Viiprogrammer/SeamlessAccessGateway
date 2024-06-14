@@ -36,11 +36,11 @@ export class PersistentMap extends Map {
     async syncClearances () {
         try {
             await fsp.writeFile(
-                'clearances.json',
+                this[pathSym],
                 JSON.stringify([...super.entries()], null, 2)
             )
 
-            console.log('Clearance sync')
+            console.log('Wrote Map to file')
         } catch (err) {
             console.log('Error writing Map to file', err)
         }
