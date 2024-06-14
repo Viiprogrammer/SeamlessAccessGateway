@@ -9,6 +9,12 @@ export function filterSocketConnReset(err, socketDescription) {
     }
 }
 
+/**
+ * Patch request headers to add clearances
+ * @param {Headers} headers
+ * @param {Map<string, { value: string, 'user-agent': string }>} clearances
+ * @return {Headers}
+ */
 export function patchRequestHeaders (headers, clearances) {
     const lowercaseHeaders = Object.fromEntries(
         Object.entries(headers)
