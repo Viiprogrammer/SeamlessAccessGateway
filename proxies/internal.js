@@ -1,7 +1,7 @@
 import { Proxy } from "http-mitm-proxy"
 import { filterSocketConnReset } from "./shared.js";
 import net from "node:net";
-import {getDomain} from "../utils/index.js";
+import {getDomain, makeHeadersLowercase} from "../utils/index.js";
 
 const proxy = new Proxy()
 proxy.use(Proxy.gunzip);
@@ -50,15 +50,8 @@ function onConnect(req, socket, head, callback) {
 
 function onResponseHeadersExtractClearanceFactory (clearances, activeChallenges) {
     return function (ctx, callback) {
-        const lowercaseHeaders = Object.fromEntries(
-            Object.entries(ctx.clientToProxyRequest.headers)
-                .map(([key, value]) => [key.toLowerCase(), value])
-        )
-
-        const lowercaseHeadersResponse = Object.fromEntries(
-            Object.entries(ctx.serverToProxyResponse.headers)
-                .map(([key, value]) => [key.toLowerCase(), value])
-        )
+        const lowercaseHeaders = makeHeadersLowercase(ctx.clientToProxyRequest.headers)
+        const lowercaseHeadersResponse = makeHeadersLowercase(ctx.serverToProxyResponse.headers)
 
         const requestCookieHasCfClearance = lowercaseHeaders.cookie && lowercaseHeaders.cookie.includes('cf_clearance')
         let responseCookieHasCfClearance = false
