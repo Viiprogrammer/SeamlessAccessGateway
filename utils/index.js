@@ -1,5 +1,6 @@
 import tls from "node:tls"
-import {setTimeout as sleep} from 'node:timers/promises'
+import { setTimeout as sleep } from 'node:timers/promises'
+import karmaChromeLauncher from "karma-chrome-launcher"
 
 export function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -87,4 +88,18 @@ export function makeHeadersLowercase (headers) {
         Object.entries(headers)
             .map(([key, value]) => [key.toLowerCase(), value])
     )
+}
+
+/**
+ * Returns chrome paths
+ * @return {{ chrome: string|null, chromeCanary: string|null, chromium: string|null }}
+ */
+export function findChrome () {
+    const paths = {}
+
+    for (const end of ['hrome', 'hromeCanary', 'hromium']) {
+        paths[`c${end}`] = karmaChromeLauncher[`launcher:C${end}`][1].prototype.DEFAULT_CMD[process.platform] || null
+    }
+
+    return paths
 }

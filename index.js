@@ -1,4 +1,4 @@
-import { patchTLSFingerprint } from "./utils/index.js";
+import {findChrome, patchTLSFingerprint} from "./utils/index.js";
 patchTLSFingerprint()
 
 import { spawn } from "node:child_process"
@@ -13,13 +13,26 @@ const clearances = new PersistentMap([], 'clearances.json')
 
 function createWebviewFactory (proxy) {
     return (url) => {
-        return spawn(/*'./webview'*/'google-chrome-stable', [
-            '--app=' + url,
+        const chromePaths = Object.values(findChrome())
+            .filter(x => x !== null)
+
+        const chromeArgs = [
             '--proxy-server=http://'+ proxy.host + ':' + proxy.port,
             '--ignore-certificate-errors',
             '--window-size=800,600',
+            '--disable-features=Translate',
+            '--no-default-browser-check',
+            '--noerrdialogs',
+            '--incognito',
             '--disable-sync',
+            '--disable-infobars',
+            '--test-type',
             '--chrome-frame'
+        ]
+
+        return spawn(chromePaths[0] || './webview'/*'google-chrome-stable'*/, [
+            '--app=' + url,
+            ...(chromePaths[0] ? chromeArgs : [])
         ], {
             env: {
                 ...process.env,
