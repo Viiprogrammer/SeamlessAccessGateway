@@ -1,6 +1,6 @@
 import tls from "tls"
 import karmaChromeLauncher from "karma-chrome-launcher"
-import { AbortController } from "node-abort-controller";
+import { AbortController } from "node-abort-controller"
 
 export function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
