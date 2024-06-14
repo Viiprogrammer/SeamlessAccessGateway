@@ -1,5 +1,5 @@
 // Since node 0.9.9, ECONNRESET on sockets are no longer hidden
-import {getDomain} from "../utils/index.js";
+import { getDomain } from "../utils/index.js"
 
 export function filterSocketConnReset(err, socketDescription) {
     if (err.errno === "ECONNRESET") {

@@ -1,4 +1,5 @@
-import tls from "tls"
+import tls from "node:tls"
+import fetch from "node-fetch"
 import karmaChromeLauncher from "karma-chrome-launcher"
 import { AbortController } from "node-abort-controller"
 

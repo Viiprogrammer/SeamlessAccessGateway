@@ -1,10 +1,12 @@
-import {findChrome, patchTLSFingerprint} from "./utils/index.js";
+import { spawn } from "node:child_process"
+import { findChrome, patchTLSFingerprint } from "./utils/index.js"
 patchTLSFingerprint()
 
-import { spawn } from "child_process"
-import { startExternalProxy } from "./proxies/index.js";
-import { startInternalProxy } from "./proxies/internal.js";
-import { PersistentMap } from "./utils/persistent-map.js";
+import { startExternalProxy } from "./proxies/index.js"
+import { startInternalProxy } from "./proxies/internal.js"
+import { PersistentMap } from "./utils/persistent-map.js"
+import getPort from 'get-port'
+import chalk from 'chalk'
 
 const activeChallenges = new Map()
 const clearances = new PersistentMap([], 'clearances.json')
@@ -43,9 +45,6 @@ function createWebviewFactory (proxy) {
 }
 
 async function main() {
-    const { default: getPort } = await import('get-port')
-    const { default: chalk } = await import('chalk')
-
     const internalHost = 'localhost'
     const externalHost = 'localhost'
     const externalPort = await getPort({ port: [5191, 5192, 5193, 5194, 5195] })
