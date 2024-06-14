@@ -1,4 +1,7 @@
-# Webviwe binaries
+# Artifacts
+build
+
+# Webview binaries
 webview
 webview.exe
 # MITM certs
