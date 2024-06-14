@@ -1,5 +1,6 @@
 import tls from "tls"
 import karmaChromeLauncher from "karma-chrome-launcher"
+import { AbortController } from "node-abort-controller";
 
 export function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -55,9 +56,18 @@ export async function fetchWithRetry (url, opts = {}) {
     let { pause, retry = 3, timeout = 3000, callback, silent = false } = opts
 
     while (retry > 0) {
+        let timeoutId = null
         try {
-            opts.signal = AbortSignal.timeout(timeout)
+            const controller = new AbortController();
+            const { signal } = controller;
+
+            timeoutId = setTimeout(() => {
+                controller.abort();
+            }, timeout);
+
+            opts.signal = signal
             const response = await fetch(url, opts)
+            clearTimeout(timeoutId)
 
             if (response.status >= 500 && response.status < 600) {
                 throw new Error('Request failed with status code ' + response.status)
@@ -65,6 +75,7 @@ export async function fetchWithRetry (url, opts = {}) {
                 return response
             }
         } catch (err) {
+            clearTimeout(timeoutId)
             if (callback) callback(retry)
 
             retry = retry - 1
